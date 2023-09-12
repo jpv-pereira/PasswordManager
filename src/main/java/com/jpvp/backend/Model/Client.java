@@ -2,20 +2,23 @@ package com.jpvp.backend.Model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Client")
 public class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String firstName;
     private String lastName;
     private String phoneNumber;
 
     /*
-
-    Add a one to many relation between the client and passwords that they have added to their account
-     */
+        Add a one to many relation between the client and passwords that they have added to their account
+    */
+    @OneToMany
+    private List<StoredPassword> storedPasswordList;
 
     public Long getId() {
         return id;
@@ -49,4 +52,11 @@ public class Client {
         this.phoneNumber = phoneNumber;
     }
 
+    public List<StoredPassword> getStoredPasswordList() {
+        return storedPasswordList;
+    }
+
+    public void setStoredPasswordList(List<StoredPassword> storedPasswordList) {
+        this.storedPasswordList = storedPasswordList;
+    }
 }
