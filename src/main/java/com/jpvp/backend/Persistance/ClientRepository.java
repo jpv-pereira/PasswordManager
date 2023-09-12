@@ -1,4 +1,4 @@
-package com.jpvp.backend.Repository;
+package com.jpvp.backend.Persistance;
 
 import com.jpvp.backend.Model.Client;
 import org.springframework.data.repository.CrudRepository;
