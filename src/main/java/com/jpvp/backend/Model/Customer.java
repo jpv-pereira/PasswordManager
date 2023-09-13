@@ -3,6 +3,7 @@ package com.jpvp.backend.Model;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -12,7 +13,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Not
+    @NotBlank
     @Column(unique = true)
     private String userName;
 
@@ -33,12 +34,12 @@ public class Customer {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getLastName() {
