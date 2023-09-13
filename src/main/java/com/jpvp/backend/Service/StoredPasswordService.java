@@ -1,15 +1,14 @@
 package com.jpvp.backend.Service;
 
 import com.jpvp.backend.Model.StoredPassword;
-import com.jpvp.backend.Persistance.ClientRepository;
-import com.jpvp.backend.Persistance.JpaClientDao;
+import com.jpvp.backend.Persistance.JpaCustomerDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StoredPasswordService {
     @Autowired
-    private JpaClientDao jpaClientDao;
+    private JpaCustomerDao jpaCustomerDao;
 
     public StoredPassword createStoredPassword (StoredPassword password) {
 

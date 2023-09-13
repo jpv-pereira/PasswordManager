@@ -1,16 +1,21 @@
 package com.jpvp.backend.Model;
 
 import jakarta.persistence.*;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
 
 @Entity
-@Table(name = "Client")
-public class Client {
+@Table(name = "Customer")
+public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String firstName;
+
+    @Not
+    @Column(unique = true)
+    private String userName;
+
     private String lastName;
     private String phoneNumber;
 
