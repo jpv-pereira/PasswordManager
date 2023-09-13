@@ -9,4 +9,6 @@ public interface CustomerDao {
 
     Customer createCustomer(Customer customer);
 
+    boolean userNameExists(String userName);
+
 }

@@ -1,5 +1,6 @@
 package com.jpvp.backend.Service;
 
+import com.jpvp.backend.Exception.UsernameTakenException;
 import com.jpvp.backend.Model.Customer;
 import com.jpvp.backend.Persistance.JpaCustomerDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,11 @@ public class CustomerService {
     @Autowired
     private JpaCustomerDao jpaCustomerDao;
 
-    public Customer createCustomner(Customer customer) {
+    public Customer createCustomer(Customer customer) {
+        if (jpaCustomerDao.userNameExists(customer.getUserName())) {
+            throw new UsernameTakenException();
+        }
+
         return jpaCustomerDao.createCustomer(customer);
     }
 
