@@ -15,4 +15,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> handleUsernameTakenException(UsernameTakenException exception) {
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
+
+    @ExceptionHandler(EmailTakenException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleEmailTakenException(EmailTakenException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
 }

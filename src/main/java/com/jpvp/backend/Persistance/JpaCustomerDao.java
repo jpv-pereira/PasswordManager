@@ -1,6 +1,7 @@
 package com.jpvp.backend.Persistance;
 
 import com.jpvp.backend.Model.Customer;
+import com.jpvp.backend.Model.StoredPassword;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -23,6 +24,8 @@ public class JpaCustomerDao implements CustomerDao {
     @Override
         public List<Customer> getAllCustomers() {
         CriteriaQuery<Customer> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(Customer.class);
+        Root<Customer> customerRoot = criteriaQuery.from(Customer.class);
+
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
@@ -34,19 +37,45 @@ public class JpaCustomerDao implements CustomerDao {
     }
 
     @Override
-    public boolean userNameExists(String userName) {
+    public Customer findByUserMame(String userName) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        CriteriaQuery<Customer> criteriaQuery = criteriaBuilder.createQuery(Customer.class);
 
         Root<Customer> customerRoot = criteriaQuery.from(Customer.class);
-        criteriaQuery.select(criteriaBuilder.count(customerRoot));
 
         Predicate userNamePredicate = criteriaBuilder.equal(customerRoot.get("userName"), userName);
 
         criteriaQuery.where(userNamePredicate);
 
+        return entityManager.createQuery(criteriaQuery).getSingleResult();
+    }
+
+    @Override
+    public <T> boolean verifyExists(String rowName, String verifyString, Class<T> type) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+
+        Root<T> customerRoot = criteriaQuery.from(type);
+        criteriaQuery.select(criteriaBuilder.count(customerRoot));
+
+        Predicate existsPredicate = criteriaBuilder.equal(customerRoot.get(rowName), verifyString);
+
+        criteriaQuery.where(existsPredicate);
+
         TypedQuery<Long> customerTypedQuery = entityManager.createQuery(criteriaQuery);
 
         return customerTypedQuery.getSingleResult() > 0;
+    }
+
+    @Override
+    public void createStoredPassword(Customer customer, StoredPassword storedPassword) {
+        StoredPassword managedPassword = entityManager.merge(storedPassword);
+
+        List<StoredPassword> storedPasswordList = customer.getStoredPasswordList();
+        storedPasswordList.add(managedPassword);
+
+        customer.setStoredPasswordList(storedPasswordList);
+
+        entityManager.persist(customer);
     }
 }

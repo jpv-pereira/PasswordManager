@@ -8,8 +8,16 @@ public class StoredPassword {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @ManyToOne
+    private Customer customer;
+
     private String serviceName;
     private String password;
+
+    public Customer getCustomer() {
+        return customer;
+    }
 
     public Long getId() {
         return id;
@@ -17,6 +25,10 @@ public class StoredPassword {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public String getServiceName() {
