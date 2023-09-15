@@ -17,6 +17,10 @@ public class Customer {
     @Column(unique = true)
     private String userName;
 
+    @NotBlank
+    @Column(unique = true)
+    private String email;
+
     private String password;
 
     private String lastName;
@@ -25,7 +29,11 @@ public class Customer {
     /*
         Add a one to many relation between the client and passwords that they have added to their account
     */
-    @OneToMany
+    @OneToMany(
+            cascade = {CascadeType.ALL},
+            orphanRemoval = true,
+            mappedBy = "customer",
+            fetch = FetchType.EAGER)
     private List<StoredPassword> storedPasswordList;
 
     public Long getId() {
@@ -42,6 +50,14 @@ public class Customer {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
