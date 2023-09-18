@@ -23,9 +23,6 @@ public class Customer {
 
     private String password;
 
-    private String lastName;
-    private String phoneNumber;
-
     /*
         Add a one to many relation between the client and passwords that they have added to their account
     */
@@ -66,22 +63,6 @@ public class Customer {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public List<StoredPassword> getStoredPasswordList() {

@@ -19,6 +19,7 @@ public class CustomerController {
      */
     @GetMapping
     public String testMapping() {
+        System.out.println("testedtested");
         return "Test";
     }
 
@@ -29,6 +30,8 @@ public class CustomerController {
 
     @PostMapping(value = "/register")
     public Customer createCustomer(@RequestBody Customer customer) {
+
+        System.out.println("Tried to register ");
         return customerService.createCustomer(customer);
     }
 
