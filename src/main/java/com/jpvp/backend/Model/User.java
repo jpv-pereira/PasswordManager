@@ -7,8 +7,8 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
-@Table(name = "Customer")
-public class Customer {
+@Table(name = "User")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,13 +23,15 @@ public class Customer {
 
     private String password;
 
+    private String role = "user";
+
     /*
         Add a one to many relation between the client and passwords that they have added to their account
     */
     @OneToMany(
             cascade = {CascadeType.ALL},
             orphanRemoval = true,
-            mappedBy = "customer",
+            mappedBy = "user",
             fetch = FetchType.EAGER)
     private List<StoredPassword> storedPasswordList;
 
@@ -71,5 +73,13 @@ public class Customer {
 
     public void setStoredPasswordList(List<StoredPassword> storedPasswordList) {
         this.storedPasswordList = storedPasswordList;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
