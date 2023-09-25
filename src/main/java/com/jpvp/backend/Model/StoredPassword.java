@@ -10,13 +10,13 @@ public class StoredPassword {
     private Long id;
 
     @ManyToOne
-    private Customer customer;
+    private User user;
 
     private String serviceName;
     private String password;
 
-    public Customer getCustomer() {
-        return customer;
+    public User getUser() {
+        return user;
     }
 
     public Long getId() {
@@ -27,8 +27,8 @@ public class StoredPassword {
         this.id = id;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomer(User user) {
+        this.user = user;
     }
 
     public String getServiceName() {

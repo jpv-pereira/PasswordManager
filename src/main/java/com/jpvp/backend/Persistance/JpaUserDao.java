@@ -1,6 +1,6 @@
 package com.jpvp.backend.Persistance;
 
-import com.jpvp.backend.Model.Customer;
+import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Model.StoredPassword;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -16,32 +16,32 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class JpaCustomerDao implements CustomerDao {
+public class JpaUserDao implements UserDao {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-        public List<Customer> getAllCustomers() {
-        CriteriaQuery<Customer> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(Customer.class);
-        Root<Customer> customerRoot = criteriaQuery.from(Customer.class);
+        public List<User> getAllUsers() {
+        CriteriaQuery<User> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(User.class);
+        Root<User> customerRoot = criteriaQuery.from(User.class);
 
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     @Override
-    public Customer createCustomer(Customer customer) {
-        Customer managedClient = entityManager.merge(customer);
+    public User createUser(User customer) {
+        User managedClient = entityManager.merge(customer);
         entityManager.persist(managedClient);
         return managedClient;
     }
 
     @Override
-    public Customer findByUserMame(String userName) {
+    public User findByUserMame(String userName) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Customer> criteriaQuery = criteriaBuilder.createQuery(Customer.class);
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 
-        Root<Customer> customerRoot = criteriaQuery.from(Customer.class);
+        Root<User> customerRoot = criteriaQuery.from(User.class);
 
         Predicate userNamePredicate = criteriaBuilder.equal(customerRoot.get("userName"), userName);
 
@@ -68,7 +68,7 @@ public class JpaCustomerDao implements CustomerDao {
     }
 
     @Override
-    public void createStoredPassword(Customer customer, StoredPassword storedPassword) {
+    public void createStoredPassword(User customer, StoredPassword storedPassword) {
         StoredPassword managedPassword = entityManager.merge(storedPassword);
 
         List<StoredPassword> storedPasswordList = customer.getStoredPasswordList();
@@ -78,4 +78,6 @@ public class JpaCustomerDao implements CustomerDao {
 
         entityManager.persist(customer);
     }
+
+
 }
