@@ -1,10 +1,16 @@
 package com.jpvp.backend.Controller;
 
+import com.jpvp.backend.Config.JwtResponse;
+import com.jpvp.backend.Config.JwtUtils;
+import com.jpvp.backend.Exception.IncorrectPasswordException;
+import com.jpvp.backend.Exception.UserNotFoundException;
+import com.jpvp.backend.Model.LoginRequest;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Model.StoredPassword;
 import com.jpvp.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +24,10 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    JwtUtils
+    private JwtUtils jwtUtils;
+
     @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     /*
     A simple test mapping to see if I haven't royally screwed up and that the server is actually able to respond with 200
@@ -34,7 +39,20 @@ public class UserController {
     }
 
     @PostMapping(value = "/login")
-    public void login(@RequestBody String email, String password) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        User user = userService.findByEmail(loginRequest.getEmail());
+
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
+        if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new IncorrectPasswordException();
+        }
+
+        String token = jwtUtils.generateToken(user.getEmail());
+
+        return ResponseEntity.ok(new JwtResponse(token));
     }
 
     @PostMapping(value = "/register")
@@ -54,9 +72,9 @@ public class UserController {
         return userService.findByUserName(userName);
     }
 
-    @GetMapping(value = "/findByUserName")
+    @GetMapping(value = "/storedpasswords")
     public List<StoredPassword> getStoredPasswords (User user) {
-        return userService.findByUserName(userName);
+        return userService.findByUserName(user.getUserName()).getStoredPasswordList();
     }
 
     @PostMapping(value = "/createStoredPassword")

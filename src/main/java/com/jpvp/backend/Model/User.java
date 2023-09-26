@@ -2,6 +2,7 @@ package com.jpvp.backend.Model;
 
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.hibernate.annotations.ColumnTransformer;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
@@ -21,6 +22,10 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    //@ColumnTransformer(
+    //        read = "password",
+    //        write = "bcrypt(?)"
+    //)
     private String password;
 
     private String role = "user";

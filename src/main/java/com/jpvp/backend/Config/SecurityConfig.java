@@ -34,7 +34,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(BASE_USER_API + "/login").permitAll()
-                        .requestMatchers(BASE_USER_API + "/passwords").authenticated()
+                        .requestMatchers(BASE_USER_API + "/register").permitAll()
+                        .requestMatchers(BASE_USER_API + "/storedpasswords").authenticated()
+                        .requestMatchers(BASE_USER_API + "/createStoredPassword").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults());
@@ -43,8 +45,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
