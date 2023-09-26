@@ -3,6 +3,7 @@ package com.jpvp.backend.Persistance;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Model.StoredPassword;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -47,7 +48,30 @@ public class JpaUserDao implements UserDao {
 
         criteriaQuery.where(userNamePredicate);
 
-        return entityManager.createQuery(criteriaQuery).getSingleResult();
+
+        try {
+            return entityManager.createQuery(criteriaQuery).getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+
+        Root<User> customerRoot = criteriaQuery.from(User.class);
+
+        Predicate userNamePredicate = criteriaBuilder.equal(customerRoot.get("email"), email);
+
+        criteriaQuery.where(userNamePredicate);
+
+        try {
+            return entityManager.createQuery(criteriaQuery).getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -77,6 +101,11 @@ public class JpaUserDao implements UserDao {
         customer.setStoredPasswordList(storedPasswordList);
 
         entityManager.persist(customer);
+    }
+
+    @Override
+    public List<StoredPassword> getStoredPasswords(User user) {
+        return null;
     }
 
 
