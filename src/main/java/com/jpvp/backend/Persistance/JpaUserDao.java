@@ -38,7 +38,7 @@ public class JpaUserDao implements UserDao {
     }
 
     @Override
-    public User findByUserMame(String userName) {
+    public User findByUsername(String userName) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 
@@ -92,15 +92,15 @@ public class JpaUserDao implements UserDao {
     }
 
     @Override
-    public void createStoredPassword(User customer, StoredPassword storedPassword) {
+    public void createStoredPassword(User user, StoredPassword storedPassword) {
         StoredPassword managedPassword = entityManager.merge(storedPassword);
 
-        List<StoredPassword> storedPasswordList = customer.getStoredPasswordList();
+        List<StoredPassword> storedPasswordList = user.getStoredPasswordList();
         storedPasswordList.add(managedPassword);
 
-        customer.setStoredPasswordList(storedPasswordList);
+        user.setStoredPasswordList(storedPasswordList);
 
-        entityManager.persist(customer);
+        entityManager.persist(user);
     }
 
     @Override

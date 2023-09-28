@@ -15,11 +15,9 @@ public class JwtUtils {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    private final SecretKey secretKey;
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
-    public JwtUtils(@Value("${jwt.secret}") String jwtSecret) {
-        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    }
 
 
     public String generateToken(String username) {
@@ -28,17 +26,20 @@ public class JwtUtils {
         long expMillis = nowMillis + jwtExpiration;
         Date expirationDate = new Date(expMillis);
 
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(nowMillis))
                 .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
+
+        System.out.println("Generated Token: " + token);
+        return token;
     }
 
     public String extractUsername(String token) {
         return Jwts.parser()
-                .setSigningKey(secretKey)
+                .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -46,7 +47,7 @@ public class JwtUtils {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (Exception exception) {
             return false;

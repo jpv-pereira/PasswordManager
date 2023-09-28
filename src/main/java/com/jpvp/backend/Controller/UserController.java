@@ -3,6 +3,7 @@ package com.jpvp.backend.Controller;
 import com.jpvp.backend.Config.JwtResponse;
 import com.jpvp.backend.Config.JwtUtils;
 import com.jpvp.backend.Exception.IncorrectPasswordException;
+import com.jpvp.backend.Exception.TokenValidationException;
 import com.jpvp.backend.Exception.UserNotFoundException;
 import com.jpvp.backend.Model.LoginRequest;
 import com.jpvp.backend.Model.User;
@@ -74,11 +75,17 @@ public class UserController {
 
     @GetMapping(value = "/storedpasswords")
     public List<StoredPassword> getStoredPasswords (User user) {
-        return userService.findByUserName(user.getUserName()).getStoredPasswordList();
+        return userService.findByUserName(user.getUsername()).getStoredPasswordList();
     }
 
     @PostMapping(value = "/createStoredPassword")
-    public void createStoredPassword(User user, StoredPassword storedPassword) {
-        userService.createStoredPassword(user, storedPassword);
+    public void createStoredPassword(@RequestHeader("Authorization") String token, @RequestParam StoredPassword storedPassword) {
+        if (jwtUtils.validateToken(token)) {
+            String username = jwtUtils.extractUsername(token);
+            System.out.println("Created password success");
+            userService.createStoredPassword(username, storedPassword);
+        } else {
+            throw new TokenValidationException();
+        }
     }
 }
