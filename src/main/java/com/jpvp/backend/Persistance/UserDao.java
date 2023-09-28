@@ -10,13 +10,13 @@ public interface UserDao {
 
     User createUser(User customer);
 
-    User findByUserMame(String userName);
+    User findByUsername(String userName);
 
     User findByEmail(String email);
 
     <T> boolean verifyExists(String rowName, String verifyString, Class<T> type);
 
-    void createStoredPassword(User customer, StoredPassword storedPassword);
+    void createStoredPassword(User user, StoredPassword storedPassword);
 
     List<StoredPassword> getStoredPasswords(User user);
 

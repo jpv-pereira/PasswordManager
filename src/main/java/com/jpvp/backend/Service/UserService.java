@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class UserService {
     @Autowired
-    private JpaUserDao jpaCustomerDao;
+    private JpaUserDao jpaUserDao;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -23,11 +23,11 @@ public class UserService {
         /*
         If the email is in use the user already has an account, more important than knowing if the username is taken
          */
-        if (jpaCustomerDao.verifyExists("email", user.getEmail(), User.class)) {
+        if (jpaUserDao.verifyExists("email", user.getEmail(), User.class)) {
             throw new EmailTakenException();
         }
 
-        if (jpaCustomerDao.verifyExists("userName", user.getUserName(), User.class)) {
+        if (jpaUserDao.verifyExists("userName", user.getUsername(), User.class)) {
             throw new UsernameTakenException();
         }
 
@@ -35,27 +35,28 @@ public class UserService {
 
         user.setPassword(hashedPassword);
 
-        return jpaCustomerDao.createUser(user);
+        return jpaUserDao.createUser(user);
     }
 
     public List<User> listUsers() {
-        return jpaCustomerDao.getAllUsers();
+        return jpaUserDao.getAllUsers();
     }
 
     public User findByUserName(String userName) {
-        return jpaCustomerDao.findByUserMame(userName);
+        return jpaUserDao.findByUsername(userName);
     }
 
     public User findByEmail(String email) {
-        return jpaCustomerDao.findByEmail(email);
+        return jpaUserDao.findByEmail(email);
     }
 
     public User getClientByID(long id) {
         return null;
     }
 
-    public void createStoredPassword(User user, StoredPassword storedPassword) {
-        jpaCustomerDao.createStoredPassword(user, storedPassword);
+    public void createStoredPassword(String username, StoredPassword storedPassword) {
+        User user = jpaUserDao.findByUsername(username);
+        jpaUserDao.createStoredPassword(user, storedPassword);
     }
 
 }

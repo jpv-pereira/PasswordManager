@@ -16,7 +16,7 @@ public class User {
 
     @NotBlank
     @Column(unique = true)
-    private String userName;
+    private String username;
 
     @NotBlank
     @Column(unique = true)
@@ -48,12 +48,12 @@ public class User {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
