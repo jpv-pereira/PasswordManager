@@ -1,8 +1,8 @@
 package com.jpvp.backend.Config;
 
 
-import com.jpvp.backend.Exception.TokenValidationException;
 import com.jpvp.backend.Service.UserService;
+import com.jpvp.backend.Util.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -18,7 +18,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.security.SignatureException;
 import java.util.Collections;
 
 public class JwtFilter extends OncePerRequestFilter {
@@ -33,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String token = extractToken(request);
+        final String token = jwtUtils.extractToken(request);
         System.out.println("Received Token: " + token);
 
         if (StringUtils.hasText(token)) {
@@ -57,11 +56,5 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String extractToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7); //remove prefix
-        }
-        return null;
-    }
+
 }

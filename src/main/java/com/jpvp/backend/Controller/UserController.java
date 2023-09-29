@@ -1,18 +1,17 @@
 package com.jpvp.backend.Controller;
 
 import com.jpvp.backend.Config.JwtResponse;
-import com.jpvp.backend.Config.JwtUtils;
+import com.jpvp.backend.Util.JwtUtils;
+import com.jpvp.backend.Exception.EmailNotFoundException;
 import com.jpvp.backend.Exception.IncorrectPasswordException;
-import com.jpvp.backend.Exception.TokenValidationException;
 import com.jpvp.backend.Exception.UserNotFoundException;
 import com.jpvp.backend.Model.LoginRequest;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Model.StoredPassword;
 import com.jpvp.backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,18 +73,22 @@ public class UserController {
     }
 
     @GetMapping(value = "/storedpasswords")
-    public List<StoredPassword> getStoredPasswords (User user) {
-        return userService.findByUserName(user.getUsername()).getStoredPasswordList();
+    public List<StoredPassword> getStoredPasswords (@RequestHeader("Authorization") String token) {
+        String email = jwtUtils.extractEmail(token);
+        if (!email.isEmpty()) {
+            System.out.println(email);
+            return userService.getStoredPasswords(email);
+        } else throw new EmailNotFoundException();
     }
 
     @PostMapping(value = "/createStoredPassword")
-    public void createStoredPassword(@RequestHeader("Authorization") String token, @RequestParam StoredPassword storedPassword) {
-        if (jwtUtils.validateToken(token)) {
-            String username = jwtUtils.extractUsername(token);
-            System.out.println("Created password success");
-            userService.createStoredPassword(username, storedPassword);
+    public void createStoredPassword(@RequestHeader("Authorization") String token, @RequestBody StoredPassword storedPassword) {
+        String email = jwtUtils.extractEmail(token);
+        if (!email.isEmpty()) {
+            System.out.println(email);
+            userService.createStoredPassword(email, storedPassword);
         } else {
-            throw new TokenValidationException();
+            throw new UsernameNotFoundException("Username not found");
         }
     }
 }

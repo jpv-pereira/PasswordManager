@@ -18,6 +18,6 @@ public interface UserDao {
 
     void createStoredPassword(User user, StoredPassword storedPassword);
 
-    List<StoredPassword> getStoredPasswords(User user);
+    List<StoredPassword> getStoredPasswords(String email);
 
 }

@@ -5,6 +5,7 @@ import com.jpvp.backend.Exception.UsernameTakenException;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Model.StoredPassword;
 import com.jpvp.backend.Persistance.JpaUserDao;
+import com.jpvp.backend.Util.EncryptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,8 +17,15 @@ import java.util.List;
 public class UserService {
     @Autowired
     private JpaUserDao jpaUserDao;
+
+    @Autowired
+    private StoredPasswordService storedPasswordService;
+
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EncryptionUtil encryptionUtil;
 
     public User createUser(User user) {
         /*
@@ -55,8 +63,19 @@ public class UserService {
     }
 
     public void createStoredPassword(String username, StoredPassword storedPassword) {
-        User user = jpaUserDao.findByUsername(username);
+        User user = jpaUserDao.findByEmail(username);
+        storedPassword.setPassword(encryptionUtil.encrypt(storedPassword.getPassword()));
+
         jpaUserDao.createStoredPassword(user, storedPassword);
+    }
+
+    public List<StoredPassword> getStoredPasswords (String email) {
+        List<StoredPassword> storedPasswordList = jpaUserDao.getStoredPasswords(email);
+        for (StoredPassword storedPassword: storedPasswordList) {
+            storedPassword.setPassword(encryptionUtil.decrypt(storedPassword.getPassword()));
+        }
+
+        return storedPasswordList;
     }
 
 }
