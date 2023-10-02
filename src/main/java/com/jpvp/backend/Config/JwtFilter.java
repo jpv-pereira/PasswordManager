@@ -33,7 +33,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String token = jwtUtils.extractToken(request);
-        System.out.println("Received Token: " + token);
 
         if (StringUtils.hasText(token)) {
             //try {

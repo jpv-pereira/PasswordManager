@@ -1,5 +1,6 @@
 package com.jpvp.backend.Util;
 
+import com.jpvp.backend.Exception.PasswordDecryptException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
@@ -24,9 +25,8 @@ public class EncryptionUtil {
 
             return Base64.getEncoder().encodeToString(encrypted);
         } catch (Exception exception) {
-            System.out.println(exception);
+            throw new PasswordDecryptException();
         }
-        return null;
     }
 
     public String decrypt(String data) {
@@ -41,9 +41,8 @@ public class EncryptionUtil {
 
             return new String(decrypted);
         } catch (Exception exception) {
-            System.out.println(exception);
+            throw new PasswordDecryptException();
         }
-        return null;
     }
 
 }

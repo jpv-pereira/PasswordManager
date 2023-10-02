@@ -10,7 +10,7 @@ public class StoredPassword {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;

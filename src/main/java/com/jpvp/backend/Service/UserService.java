@@ -1,6 +1,7 @@
 package com.jpvp.backend.Service;
 
 import com.jpvp.backend.Exception.EmailTakenException;
+import com.jpvp.backend.Exception.PasswordDecryptException;
 import com.jpvp.backend.Exception.UsernameTakenException;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Model.StoredPassword;
@@ -35,8 +36,12 @@ public class UserService {
             throw new EmailTakenException();
         }
 
-        if (jpaUserDao.verifyExists("userName", user.getUsername(), User.class)) {
+        if (jpaUserDao.verifyExists("username", user.getUsername(), User.class)) {
             throw new UsernameTakenException();
+        }
+
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new PasswordDecryptException();
         }
 
         String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
@@ -50,16 +55,12 @@ public class UserService {
         return jpaUserDao.getAllUsers();
     }
 
-    public User findByUserName(String userName) {
+    public User findByUsername(String userName) {
         return jpaUserDao.findByUsername(userName);
     }
 
     public User findByEmail(String email) {
         return jpaUserDao.findByEmail(email);
-    }
-
-    public User getClientByID(long id) {
-        return null;
     }
 
     public void createStoredPassword(String username, StoredPassword storedPassword) {

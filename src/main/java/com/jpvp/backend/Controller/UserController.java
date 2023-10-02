@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -32,14 +32,13 @@ public class UserController {
     /*
     A simple test mapping to see if I haven't royally screwed up and that the server is actually able to respond with 200
      */
-    @GetMapping
+    @GetMapping("/test")
     public String testMapping() {
-        System.out.println("testedtested");
         return "Test";
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public JwtResponse loginUser(@RequestBody LoginRequest loginRequest) {
         User user = userService.findByEmail(loginRequest.getEmail());
 
         if (user == null) {
@@ -52,40 +51,36 @@ public class UserController {
 
         String token = jwtUtils.generateToken(user.getEmail());
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return new JwtResponse(token);
     }
 
-    @PostMapping(value = "/register")
+    @PostMapping("/register")
     public User createUser(@RequestBody User user) {
-
-        System.out.println("Tried to register ");
         return userService.createUser(user);
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping(value = "/list")
     public List<User> listUsers() {
         return userService.listUsers();
     }
 
-    @GetMapping(value = "/findByUserName")
-    public User findByUserMame (String userName) {
-        return userService.findByUserName(userName);
+    @GetMapping(value = "/find")
+    public User findByUsername (String username) {
+        return userService.findByUsername(username);
     }
 
-    @GetMapping(value = "/storedpasswords")
+    @GetMapping(value = "/stored-passwords")
     public List<StoredPassword> getStoredPasswords (@RequestHeader("Authorization") String token) {
         String email = jwtUtils.extractEmail(token);
         if (!email.isEmpty()) {
-            System.out.println(email);
             return userService.getStoredPasswords(email);
         } else throw new EmailNotFoundException();
     }
 
-    @PostMapping(value = "/createStoredPassword")
+    @PostMapping(value = "/stored-passwords")
     public void createStoredPassword(@RequestHeader("Authorization") String token, @RequestBody StoredPassword storedPassword) {
         String email = jwtUtils.extractEmail(token);
         if (!email.isEmpty()) {
-            System.out.println(email);
             userService.createStoredPassword(email, storedPassword);
         } else {
             throw new UsernameNotFoundException("Username not found");

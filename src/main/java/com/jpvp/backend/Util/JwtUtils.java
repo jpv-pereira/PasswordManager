@@ -32,7 +32,6 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
 
-        System.out.println("Generated Token: " + token);
         return token;
     }
 
