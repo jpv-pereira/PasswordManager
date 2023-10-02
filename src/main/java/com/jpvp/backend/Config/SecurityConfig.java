@@ -18,29 +18,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private String BASE_USER_API = "/api/user";
-
-    @Bean
-    public InMemoryUserDetailsManager userDetailsManager() {
-        UserDetails user1 = User.withUsername("user1")
-                .password(passwordEncoder().encode("user1pass"))
-                .roles("user")
-                .build();
-        UserDetails user2 = User.withUsername("user2")
-                .password(passwordEncoder().encode("user2pass"))
-                .roles("user")
-                .build();
-        return new InMemoryUserDetailsManager(user1, user2);
-    }
+    private String BASE_USER_API = "/api/users";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(BASE_USER_API + "/all").permitAll()
                         .requestMatchers(BASE_USER_API + "/login").permitAll()
                         .requestMatchers(BASE_USER_API + "/register").permitAll()
-                        .requestMatchers(BASE_USER_API + "/storedpasswords").authenticated()
-                        .requestMatchers(BASE_USER_API + "/createStoredPassword").authenticated()
+                        .requestMatchers(BASE_USER_API + "/stored-passwords").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(Customizer.withDefaults())

@@ -1,10 +1,12 @@
 package com.jpvp.backend.Model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.ColumnTransformer;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,10 +37,14 @@ public class User {
     */
     @OneToMany(
             cascade = {CascadeType.ALL},
-            orphanRemoval = true,
-            mappedBy = "user",
-            fetch = FetchType.EAGER)
+            fetch = FetchType.EAGER,
+            mappedBy = "user")
+    @JsonManagedReference
     private List<StoredPassword> storedPasswordList;
+
+    public User() {
+        this.storedPasswordList = new ArrayList<>();
+    }
 
     public Long getId() {
         return id;

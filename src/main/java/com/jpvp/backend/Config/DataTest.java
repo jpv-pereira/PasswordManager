@@ -8,7 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class DataTest implements ApplicationRunner {
     @Autowired
     private JpaUserDao jpaUserDao;

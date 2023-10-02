@@ -6,10 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
@@ -31,8 +28,8 @@ public class JpaUserDao implements UserDao {
     }
 
     @Override
-    public User createUser(User customer) {
-        User managedClient = entityManager.merge(customer);
+    public User createUser(User user) {
+        User managedClient = entityManager.merge(user);
         entityManager.persist(managedClient);
         return managedClient;
     }
@@ -42,11 +39,11 @@ public class JpaUserDao implements UserDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 
-        Root<User> customerRoot = criteriaQuery.from(User.class);
+        Root<User> userRoot = criteriaQuery.from(User.class);
 
-        Predicate userNamePredicate = criteriaBuilder.equal(customerRoot.get("userName"), userName);
+        Predicate usernamePredicate = criteriaBuilder.equal(userRoot.get("username"), userName);
 
-        criteriaQuery.where(userNamePredicate);
+        criteriaQuery.where(usernamePredicate);
 
 
         try {
@@ -61,11 +58,11 @@ public class JpaUserDao implements UserDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
 
-        Root<User> customerRoot = criteriaQuery.from(User.class);
+        Root<User> userRoot = criteriaQuery.from(User.class);
 
-        Predicate userNamePredicate = criteriaBuilder.equal(customerRoot.get("email"), email);
+        Predicate usernamePredicate = criteriaBuilder.equal(userRoot.get("email"), email);
 
-        criteriaQuery.where(userNamePredicate);
+        criteriaQuery.where(usernamePredicate);
 
         try {
             return entityManager.createQuery(criteriaQuery).getSingleResult();
@@ -79,10 +76,10 @@ public class JpaUserDao implements UserDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
 
-        Root<T> customerRoot = criteriaQuery.from(type);
-        criteriaQuery.select(criteriaBuilder.count(customerRoot));
+        Root<T> userRoot = criteriaQuery.from(type);
+        criteriaQuery.select(criteriaBuilder.count(userRoot));
 
-        Predicate existsPredicate = criteriaBuilder.equal(customerRoot.get(rowName), verifyString);
+        Predicate existsPredicate = criteriaBuilder.equal(userRoot.get(rowName), verifyString);
 
         criteriaQuery.where(existsPredicate);
 
@@ -93,19 +90,32 @@ public class JpaUserDao implements UserDao {
 
     @Override
     public void createStoredPassword(User user, StoredPassword storedPassword) {
-        StoredPassword managedPassword = entityManager.merge(storedPassword);
-
         List<StoredPassword> storedPasswordList = user.getStoredPasswordList();
-        storedPasswordList.add(managedPassword);
+        storedPasswordList.add(storedPassword);
 
-        user.setStoredPasswordList(storedPasswordList);
+        storedPassword.setUser(user);
 
         entityManager.persist(user);
     }
 
     @Override
-    public List<StoredPassword> getStoredPasswords(User user) {
-        return null;
+    public List<StoredPassword> getStoredPasswords(String email) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<StoredPassword> criteriaQuery = criteriaBuilder.createQuery(StoredPassword.class);
+
+        Root<User> userRoot = criteriaQuery.from(User.class);
+        Join<User, StoredPassword> storedPasswordJoin = userRoot.join("storedPasswordList");
+
+        Predicate userNamePredicate = criteriaBuilder.equal(userRoot.get("email"), email);
+
+        criteriaQuery.select(storedPasswordJoin);
+        criteriaQuery.where(userNamePredicate);
+
+        try {
+            return entityManager.createQuery(criteriaQuery).getResultList();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 
