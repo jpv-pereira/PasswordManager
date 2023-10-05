@@ -1,13 +1,12 @@
 package com.jpvp.backend;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jpvp.backend.Controller.UserController;
 import com.jpvp.backend.Model.LoginRequest;
 import com.jpvp.backend.Model.StoredPassword;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Service.UserService;
-import com.jpvp.backend.Util.JwtUtils;
+import com.jpvp.backend.Service.JwtTokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -24,6 +21,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
@@ -43,7 +42,7 @@ public class UserControllerTests {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    JwtUtils jwtUtils;
+    JwtTokenService jwtTokenService;
 
     //A valid token for testing
     private String token;
@@ -56,9 +55,13 @@ public class UserControllerTests {
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setRole("user");
 
-        token = jwtUtils.generateToken(testUser.getUsername());
+        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+        when(mockRequest.getLocalAddr()).thenReturn("11.11.11.111");
 
-        Mockito.when(userService.findByEmail(testUser.getEmail())).thenReturn(testUser);
+        token = jwtTokenService.generateToken(testUser.getUsername(), mockRequest);
+
+
+        when(userService.findByEmail(testUser.getEmail())).thenReturn(testUser);
 
     }
 

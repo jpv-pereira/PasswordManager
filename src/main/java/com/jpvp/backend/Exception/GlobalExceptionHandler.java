@@ -3,12 +3,10 @@ package com.jpvp.backend.Exception;
 import org.antlr.v4.runtime.Token;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UsernameTakenException.class)
@@ -40,7 +38,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(TokenValidationException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     public ResponseEntity<ErrorResponse> handleTokenValidationException(TokenValidationException exception) {
         ErrorResponse response = new ErrorResponse("TokenValidationException", exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);

@@ -2,6 +2,7 @@ package com.jpvp.backend.Service;
 
 import com.jpvp.backend.Exception.EmailTakenException;
 import com.jpvp.backend.Exception.PasswordDecryptException;
+import com.jpvp.backend.Exception.UserNotFoundException;
 import com.jpvp.backend.Exception.UsernameTakenException;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Model.StoredPassword;
@@ -65,6 +66,10 @@ public class UserService {
 
     public void createStoredPassword(String username, StoredPassword storedPassword) {
         User user = jpaUserDao.findByEmail(username);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
         storedPassword.setPassword(encryptionUtil.encrypt(storedPassword.getPassword()));
 
         jpaUserDao.createStoredPassword(user, storedPassword);
