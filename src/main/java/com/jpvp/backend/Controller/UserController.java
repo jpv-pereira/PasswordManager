@@ -1,7 +1,8 @@
 package com.jpvp.backend.Controller;
 
 import com.jpvp.backend.Config.JwtResponse;
-import com.jpvp.backend.Util.JwtUtils;
+import com.jpvp.backend.Exception.TokenValidationException;
+import com.jpvp.backend.Service.JwtTokenService;
 import com.jpvp.backend.Exception.EmailNotFoundException;
 import com.jpvp.backend.Exception.IncorrectPasswordException;
 import com.jpvp.backend.Exception.UserNotFoundException;
@@ -9,8 +10,8 @@ import com.jpvp.backend.Model.LoginRequest;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Model.StoredPassword;
 import com.jpvp.backend.Service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtTokenService jwtTokenService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -38,8 +39,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/login")
-    public JwtResponse loginUser(@RequestBody LoginRequest loginRequest) {
+    public JwtResponse loginUser(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         User user = userService.findByEmail(loginRequest.getEmail());
+        System.out.println(request.getRemoteAddr());
 
         if (user == null) {
             throw new UserNotFoundException();
@@ -49,7 +51,7 @@ public class UserController {
             throw new IncorrectPasswordException();
         }
 
-        String token = jwtUtils.generateToken(user.getEmail());
+        String token = jwtTokenService.generateToken(user.getEmail(), request);
 
         return new JwtResponse(token);
     }
@@ -71,7 +73,7 @@ public class UserController {
 
     @GetMapping(value = "/stored-passwords")
     public List<StoredPassword> getStoredPasswords (@RequestHeader("Authorization") String token) {
-        String email = jwtUtils.extractEmail(token);
+        String email = jwtTokenService.extractEmail(jwtTokenService.extractToken(token));
         if (!email.isEmpty()) {
             return userService.getStoredPasswords(email);
         } else throw new EmailNotFoundException();
@@ -79,7 +81,7 @@ public class UserController {
 
     @PostMapping(value = "/stored-passwords")
     public void createStoredPassword(@RequestHeader("Authorization") String token, @RequestBody StoredPassword storedPassword) {
-        String email = jwtUtils.extractEmail(token);
+        String email = jwtTokenService.extractEmail(jwtTokenService.extractToken(token));
         if (!email.isEmpty()) {
             userService.createStoredPassword(email, storedPassword);
         } else {

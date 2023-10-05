@@ -6,18 +6,11 @@ import com.jpvp.backend.Exception.UsernameTakenException;
 import com.jpvp.backend.Model.StoredPassword;
 import com.jpvp.backend.Model.User;
 import com.jpvp.backend.Service.UserService;
-import com.jpvp.backend.Util.JwtUtils;
 import jakarta.transaction.Transactional;
-import org.aspectj.lang.annotation.Before;
-import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 
 import java.util.List;
 
