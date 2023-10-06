@@ -1,4 +1,4 @@
-package com.jpvp.backend.Persistance.AuthToken;
+package com.jpvp.backend.Persistance;
 
 import com.jpvp.backend.Model.AuthToken;
 import jakarta.persistence.EntityManager;
@@ -11,6 +11,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -18,6 +19,8 @@ public interface AuthTokenRepository extends JpaRepository<AuthToken, String> {
     AuthToken findByToken(String token);
     boolean existsByToken(String token);
     List<AuthToken> findAllByUserId(Long id);
+
+    List<AuthToken> findAllByExpirationDateBefore(Date currentDate);
 
     @Transactional
     void deleteByToken(String token);

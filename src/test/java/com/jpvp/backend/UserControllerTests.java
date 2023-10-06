@@ -4,17 +4,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpvp.backend.Model.LoginRequest;
 import com.jpvp.backend.Model.StoredPassword;
 import com.jpvp.backend.Model.User;
+import com.jpvp.backend.Service.Token.AuthTokenManagerService;
 import com.jpvp.backend.Service.UserService;
-import com.jpvp.backend.Service.JwtTokenService;
+import com.jpvp.backend.Service.Token.JwtTokenService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -27,6 +31,8 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
+@Rollback(true)
 public class UserControllerTests {
 
     @Autowired
@@ -34,6 +40,9 @@ public class UserControllerTests {
 
     @MockBean
     private UserService userService;
+
+    @Autowired
+    private AuthTokenManagerService authTokenManagerService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -59,6 +68,7 @@ public class UserControllerTests {
         when(mockRequest.getLocalAddr()).thenReturn("11.11.11.111");
 
         token = jwtTokenService.generateToken(testUser.getUsername(), mockRequest);
+        authTokenManagerService.storeToken(token, 1L, jwtTokenService.getClaimFromToken(token, Claims::getExpiration));
 
 
         when(userService.findByEmail(testUser.getEmail())).thenReturn(testUser);

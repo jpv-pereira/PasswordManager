@@ -1,4 +1,4 @@
-package com.jpvp.backend.Service;
+package com.jpvp.backend.Service.Token;
 
 import com.jpvp.backend.Exception.TokenValidationException;
 import io.jsonwebtoken.Claims;
