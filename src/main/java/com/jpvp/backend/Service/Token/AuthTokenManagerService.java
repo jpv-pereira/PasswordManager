@@ -1,10 +1,8 @@
-package com.jpvp.backend.Service;
+package com.jpvp.backend.Service.Token;
 
 import com.jpvp.backend.Model.AuthToken;
-import com.jpvp.backend.Persistance.AuthToken.AuthTokenRepository;
+import com.jpvp.backend.Persistance.AuthTokenRepository;
 import com.jpvp.backend.Util.EncryptionUtil;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +44,14 @@ public class AuthTokenManagerService {
         authTokenRepository.deleteAll(userTokens);
     }
 
+    public void cleanupExpiredTokens(Date currentDate) {
+        List<AuthToken> expiredTokens = authTokenRepository.findAllByExpirationDateBefore(currentDate);
+
+        authTokenRepository.deleteAll(expiredTokens);
+    }
+
     public String encryptToken(String token) {
         return encryptionUtil.encrypt(token);
     }
+
 }

@@ -1,9 +1,8 @@
 package com.jpvp.backend.Controller;
 
 import com.jpvp.backend.Config.JwtResponse;
-import com.jpvp.backend.Exception.TokenValidationException;
-import com.jpvp.backend.Service.AuthTokenManagerService;
-import com.jpvp.backend.Service.JwtTokenService;
+import com.jpvp.backend.Service.Token.AuthTokenManagerService;
+import com.jpvp.backend.Service.Token.JwtTokenService;
 import com.jpvp.backend.Exception.EmailNotFoundException;
 import com.jpvp.backend.Exception.IncorrectPasswordException;
 import com.jpvp.backend.Exception.UserNotFoundException;
@@ -19,7 +18,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
