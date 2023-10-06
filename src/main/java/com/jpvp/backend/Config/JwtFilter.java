@@ -4,8 +4,10 @@ package com.jpvp.backend.Config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpvp.backend.Exception.ErrorResponse;
 import com.jpvp.backend.Exception.TokenValidationException;
+import com.jpvp.backend.Service.AuthTokenManagerService;
 import com.jpvp.backend.Service.UserService;
 import com.jpvp.backend.Service.JwtTokenService;
+import com.jpvp.backend.Util.EncryptionUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
@@ -28,8 +30,13 @@ import java.util.Collections;
 public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenService jwtTokenService;
+
     @Autowired
-    private UserService userService;
+    private AuthTokenManagerService authTokenManagerService;
+
+    @Autowired
+    private EncryptionUtil encryptionUtil;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -43,6 +50,10 @@ public class JwtFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token)) {
             try {
                 if (jwtTokenService.validateToken(token, request)) {
+                    if(!authTokenManagerService.isValidToken(token)) {
+                        throw new TokenValidationException("Token is not in repository");
+                    }
+
                     System.out.println("Token validation successful"); //delete
                     Claims claims = Jwts.parser()
                             .setSigningKey(jwtSecret)
